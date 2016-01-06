@@ -23,18 +23,16 @@ object Dependencies {
 
   type ModuleMap = String => ModuleID
 
-  lazy val CVMapping2911 = crossMapped("2.9.1-1" -> "2.9.1")
-  lazy val CVMapping29   = crossMapped("2.10.4" -> "2.10", "2.10.0" -> "2.10", "2.9.1-1" -> "2.9.2", "2.9.1" -> "2.9.2")
-  lazy val CVMappingAll  = crossMapped("2.11.1" -> "2.11", "2.11.0" -> "2.11", "2.10.4" -> "2.10", "2.10.0" -> "2.10", "2.9.2" -> "2.9.1", "2.9.1-1" -> "2.9.1")
-  lazy val CVMappingScalaz = crossMapped("2.11.1" ->"2.11", "2.11.0" -> "2.11", "2.10.4" -> "2.10", "2.10.0" -> "2.10", "2.9.1-1" -> "2.9.2", "2.9.1" -> "2.9.2")
+  lazy val CVMappingAll  = crossMapped("2.11.7" -> "2.11")
+  lazy val CVMappingScalaz = crossMapped("2.11.7" ->"2.11")
 
   lazy val slf4jVersion = "1.7.2"
 
   lazy val scalazGroup        = defaultOrMapped("org.scalaz")
   lazy val scalazVersion      = defaultOrMapped("6.0.4")
-  lazy val scalaz7Version     = defaultOrMapped("7.0.0",  "2.11.0" -> "7.0.6", "2.11.1" -> "7.0.6")
-  lazy val specs2Version      = defaultOrMapped("1.12.3", "2.11.0" -> "2.3.11", "2.11.1" -> "2.3.11")
-  lazy val scalatestVersion   = defaultOrMapped("1.9.1",  "2.11.0" -> "2.1.3", "2.11.1" -> "2.1.3")
+  lazy val scalaz7Version     = defaultOrMapped("7.0.6")
+  lazy val specs2Version      = defaultOrMapped("2.3.11")
+  lazy val scalatestVersion   = defaultOrMapped("2.1.3")
 
   // Compile scope:
   // Scope available in all classpath, transitive by default.
@@ -45,7 +43,7 @@ object Dependencies {
   lazy val joda_time              = "joda-time"                  % "joda-time"          % "2.1"
   lazy val joda_convert           = "org.joda"                   % "joda-convert"       % "1.2"
   lazy val htmlparser             = "nu.validator.htmlparser"    % "htmlparser"         % "1.4"
-  lazy val mongo_java_driver      = "org.mongodb"                % "mongo-java-driver"  % "2.12.2"
+  lazy val mongo_java_driver      = "org.mongodb"                % "mongo-java-driver"  % "3.2.0"
   lazy val paranamer              = "com.thoughtworks.paranamer" % "paranamer"          % "2.4.1"
   lazy val scalajpa               = "org.scala-libs"             % "scalajpa"           % "1.5"     cross CVMappingAll
   lazy val scalap: ModuleMap      = "org.scala-lang"             % "scalap"             % _

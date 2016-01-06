@@ -64,7 +64,7 @@ class DBRefField[OwnerType <: BsonRecord[OwnerType], RefType <: MongoRecord[RefT
 
   def asXHtml = <div></div>
 
-  def defaultValue = new DBRef(null, null, null)
+  def defaultValue = new DBRef(null, null)
 
   def setFromAny(in: Any): Box[DBRef] = in match {
     case ref: DBRef => Full(set(ref))
@@ -84,8 +84,8 @@ class DBRefField[OwnerType <: BsonRecord[OwnerType], RefType <: MongoRecord[RefT
     MongoDB.use(ref.meta.connectionIdentifier) ( db => {
       val id = dbo.get("$id").toString
       ObjectId.isValid(id) match {
-        case true => Full(set(new DBRef(db, dbo.get("$ref").toString, new ObjectId(id))))
-        case false => Full(set(new DBRef(db, dbo.get("$ref").toString, id)))
+        case true => Full(set(new DBRef(dbo.get("$ref").toString, new ObjectId(id))))
+        case false => Full(set(new DBRef(dbo.get("$ref").toString, id)))
       }
     })
   }

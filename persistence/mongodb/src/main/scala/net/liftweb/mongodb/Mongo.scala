@@ -26,43 +26,6 @@ import scala.collection.immutable.HashSet
 import com.mongodb.{DB, DBCollection, Mongo, MongoClient, MongoException, MongoOptions, ServerAddress}
 
 /*
-* Wrapper for getting a reference to a db from the given Mongo instance
-*/
-@deprecated("Use MongoClient to define your dbs.", "2.6")
-case class MongoAddress(host: MongoHostBase, name: String) {
-  def db = host.mongo.getDB(name)
-}
-
-/*
-* Wrapper for creating a Mongo instance
-*/
-@deprecated("Use MongoClient to define your dbs.", "2.6")
-abstract class MongoHostBase {
-  def mongo: Mongo
-}
-
-@deprecated("Use MongoClient to define your dbs.", "2.6")
-case class MongoHost(server: ServerAddress = new ServerAddress, options: MongoOptions = new MongoOptions) extends MongoHostBase {
-  lazy val mongo = new Mongo(server, options)
-}
-
-@deprecated("Use MongoClient to define your dbs.", "2.6")
-object MongoHost {
-  def apply(host: String): MongoHost = MongoHost(new ServerAddress(host, 27017))
-  def apply(host: String, port: Int): MongoHost = MongoHost(new ServerAddress(host, port))
-  def apply(host: String, port: Int, options: MongoOptions): MongoHost = MongoHost(new ServerAddress(host, port), options)
-}
-
-/*
- * Wrapper for creating a Replica Set
- */
-@deprecated("Use MongoClient to define your dbs.", "2.6")
-case class MongoSet(dbs: List[ServerAddress], options: MongoOptions = new MongoOptions) extends MongoHostBase {
-  import scala.collection.JavaConversions._
-  lazy val mongo = new Mongo(dbs, options)
-}
-
-/*
 * Main Mongo object
 */
 object MongoDB {
@@ -72,47 +35,10 @@ object MongoDB {
   */
   private val dbs = new ConcurrentHashMap[ConnectionIdentifier, (Mongo, String)]
 
-  /*
-  * Define a Mongo db
-  */
-  @deprecated("Use defineDb that takes a MongoClient instance.", "2.6")
-  def defineDb(name: ConnectionIdentifier, address: MongoAddress) {
-    dbs.put(name, (address.host.mongo, address.name))
-  }
-  /*
-   * Define a Mongo db using a Mongo instance.
-   */
-  @deprecated("Use defineDb that takes a MongoClient instance.", "2.6")
-  def defineDb(name: ConnectionIdentifier, mngo: Mongo, dbName: String) {
-    dbs.put(name, (mngo, dbName))
-  }
-
   /**
     * Define a Mongo db using a MongoClient instance.
     */
   def defineDb(name: ConnectionIdentifier, mngo: MongoClient, dbName: String) {
-    dbs.put(name, (mngo, dbName))
-  }
-
-  /*
-  * Define and authenticate a Mongo db
-  */
-  @deprecated("use MongoClient to supply credentials.", "2.6")
-  def defineDbAuth(name: ConnectionIdentifier, address: MongoAddress, username: String, password: String) {
-    if (!address.db.authenticate(username, password.toCharArray))
-      throw new MongoException("Authorization failed: "+address.toString)
-
-    dbs.put(name, (address.host.mongo, address.name))
-  }
-
-  /*
-  * Define and authenticate a Mongo db using a Mongo instance.
-  */
-  @deprecated("use MongoClient to supply credentials.", "2.6")
-  def defineDbAuth(name: ConnectionIdentifier, mngo: Mongo, dbName: String, username: String, password: String) {
-    if (!mngo.getDB(dbName).authenticate(username, password.toCharArray))
-      throw new MongoException("Authorization failed: "+mngo.toString)
-
     dbs.put(name, (mngo, dbName))
   }
 
@@ -196,15 +122,7 @@ object MongoDB {
       case _ => throw new MongoException("Mongo not found: "+name.toString)
     }
 
-    // start the request
-    db.requestStart
-    try {
-      f(db)
-    }
-    finally {
-      // end the request
-      db.requestDone
-    }
+    f(db)
   }
 
   /**
@@ -217,23 +135,7 @@ object MongoDB {
       case _ => throw new MongoException("Mongo not found: "+DefaultConnectionIdentifier.toString)
     }
 
-    // start the request
-    db.requestStart
-    try {
-      f(db)
-    }
-    finally {
-      // end the request
-      db.requestDone
-    }
-  }
-
-  /**
-    * Clears HashMap of mongo instances.
-    */
-  @deprecated("Use clearAll instead.", "2.6")
-  def close: Unit = {
-    dbs.clear
+    f(db)
   }
 
   /**

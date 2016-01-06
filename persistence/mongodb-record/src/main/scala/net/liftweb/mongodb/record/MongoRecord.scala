@@ -141,8 +141,8 @@ trait MongoId[OwnerType <: MongoRecord[OwnerType]] {
   * Get the DBRef for this record
   */
   def getRef: DBRef = {
-    MongoDB.use(meta.mongoIdentifier) ( db =>
-      new DBRef(db, meta.collectionName, _id.value)
+    MongoDB.use(this.meta.mongoIdentifier) ( db =>
+      new DBRef(this.meta.collectionName, _id.value)
     )
   }
 }
