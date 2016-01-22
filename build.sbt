@@ -21,7 +21,10 @@ libraryDependencies in ThisBuild <++= scalaVersion {sv => Seq(specs2(sv), scalac
 // Settings for Sonatype compliance
 pomIncludeRepository in ThisBuild  := { _ => false }
 
-publishTo in ThisBuild            <<= isSnapshot(if (_) Some(Opts.resolver.sonatypeSnapshots) else Some(Opts.resolver.sonatypeStaging))
+//for local
+//publishTo in ThisBuild            <<= isSnapshot(if (_) Some(Opts.resolver.sonatypeSnapshots) else Some(Opts.resolver.sonatypeStaging))
+
+publishTo := Some(Resolver.file("mvn-repo", new File(Path.userHome + "/git/mvn-repo/")))
 
 scmInfo in ThisBuild               := Some(ScmInfo(url("https://github.com/lift/framework"), "scm:git:https://github.com/lift/framework.git"))
 
