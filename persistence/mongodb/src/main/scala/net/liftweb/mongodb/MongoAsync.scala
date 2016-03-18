@@ -44,7 +44,7 @@ object MongoAsync {
   */
   def getDb(name: ConnectionIdentifier): Option[MongoDatabase] = dbs.get(name) match {
     case null => None
-    case (mngo, db) => Some(mngo.getDatabase(db))
+    case (mngo, db) => Some(mngo.getDatabase(db).withCodecRegistry(com.mongodb.MongoClient.getDefaultCodecRegistry))
   }
 
 
