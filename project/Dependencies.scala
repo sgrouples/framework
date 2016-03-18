@@ -37,13 +37,14 @@ object Dependencies {
   // Compile scope:
   // Scope available in all classpath, transitive by default.
   lazy val commons_codec          = "commons-codec"              % "commons-codec"      % "1.6"
-  lazy val commons_fileupload     = "commons-fileupload"         % "commons-fileupload" % "1.2.2"
+  lazy val commons_fileupload     = "commons-fileupload"         % "commons-fileupload" % "1.3.1"
   lazy val commons_httpclient     = "commons-httpclient"         % "commons-httpclient" % "3.1"
   lazy val javamail               = "javax.mail"                 % "mail"               % "1.4.4"
   lazy val joda_time              = "joda-time"                  % "joda-time"          % "2.1"
   lazy val joda_convert           = "org.joda"                   % "joda-convert"       % "1.2"
   lazy val htmlparser             = "nu.validator.htmlparser"    % "htmlparser"         % "1.4"
-  lazy val mongo_java_driver      = "org.mongodb"                % "mongo-java-driver"  % "3.2.1"
+  lazy val mongo_java_driver      = "org.mongodb"                % "mongo-java-driver"  % "3.2.2"
+  lazy val mongo_async_driver     = "org.mongodb"                % "mongodb-driver-async"  % "3.2.2"
   lazy val paranamer              = "com.thoughtworks.paranamer" % "paranamer"          % "2.4.1"
   lazy val scalajpa               = "org.scala-libs"             % "scalajpa"           % "1.5"     cross CVMappingAll
   lazy val scalap: ModuleMap      = "org.scala-lang"             % "scalap"             % _

@@ -22,7 +22,6 @@ import java.util.{Calendar, UUID}
 import java.util.regex.Pattern
 
 import scala.collection.JavaConversions._
-
 import net.liftweb.common._
 import net.liftweb.json.{Formats, JsonParser}
 import net.liftweb.json.JsonAST._
@@ -32,10 +31,12 @@ import net.liftweb.record.{MandatoryTypedField, MetaRecord, Record}
 import net.liftweb.record.FieldHelpers.expectedA
 import net.liftweb.record.field._
 import net.liftweb.util.ConnectionIdentifier
-
 import com.mongodb._
 import com.mongodb.util.JSON
 import org.bson.types.ObjectId
+import org.bson.Document
+
+import scala.concurrent.Future
 
 trait MongoMetaRecord[BaseRecord <: MongoRecord[BaseRecord]]
   extends BsonMetaRecord[BaseRecord] with MongoMeta[BaseRecord] {
@@ -69,6 +70,10 @@ trait MongoMetaRecord[BaseRecord <: MongoRecord[BaseRecord]]
    * Use the db associated with this Meta.
    */
   def useDb[T](f: DB => T): T = MongoDB.use(connectionIdentifier)(f)
+
+  def useCollAsync[T](f: com.mongodb.async.client.MongoCollection[Document] => T): T = {
+    MongoAsync.useCollection[T](connectionIdentifier, collectionName)(f)
+  }
 
   /**
   * Delete the instance from backing store
@@ -265,6 +270,18 @@ trait MongoMetaRecord[BaseRecord <: MongoRecord[BaseRecord]]
   def save(inst: BaseRecord): Boolean = saveOp(inst) {
     useColl { coll =>
       coll.save(inst.asDBObject)
+    }
+  }
+
+  def insertAsync(inst:BaseRecord): Future[Boolean] = {
+    useCollAsync { coll =>
+      val cb = new SingleBooleanVoidCallback( () => {
+        foreachCallback(inst, _.afterSave)
+        inst.allFields.foreach { _.resetDirty }
+      })
+      foreachCallback(inst, _.beforeSave)
+      coll.insertOne(inst.asDocument, cb)
+      cb.future
     }
   }
 

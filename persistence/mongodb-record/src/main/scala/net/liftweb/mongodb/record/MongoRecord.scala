@@ -25,6 +25,7 @@ import com.mongodb.{BasicDBObject, DBObject, DBRef, WriteConcern}
 
 import org.bson.types.ObjectId
 import common.{Full, Box}
+import scala.concurrent.Future
 
 trait MongoRecord[MyType <: MongoRecord[MyType]] extends BsonRecord[MyType] {
   self: MyType =>
@@ -119,6 +120,12 @@ trait MongoRecord[MyType <: MongoRecord[MyType]] extends BsonRecord[MyType] {
   def deleteBox_! : Box[Boolean] = tryo {
     runSafe {
       meta.delete_!(this)
+    }
+  }
+
+  def insertAsync():Future[Boolean] = {
+    runSafe {
+      meta.insertAsync(this)
     }
   }
 }
