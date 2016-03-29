@@ -62,6 +62,7 @@ class BsonRecordField[OwnerType <: BsonRecord[OwnerType], SubRecordType <: BsonR
 
   def setFromAny(in: Any): Box[SubRecordType] = in match {
     case dbo: DBObject => setBox(Full(valueMeta.fromDBObject(dbo)))
+    case dbo: org.bson.Document => setBox(Full(valueMeta.fromDocument(dbo)))
     case _ => genericSetFromAny(in)
   }
 

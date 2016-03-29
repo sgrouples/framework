@@ -31,20 +31,10 @@ object BuildDef extends Build {
                 aggregatedSetting(dependencyClasspath in(Compile, doc)),
                 publishArtifact := false)
 
-  lazy val frameworkPre211 =
-    liftProject("lift-framework-pre-211", file("."))
-      .aggregate(liftProjects ++ pre_211_project : _*)
-      .settings(aggregatedSetting(sources in(Compile, doc)),
-                aggregatedSetting(dependencyClasspath in(Compile, doc)),
-                publishArtifact := false,
-                target <<= baseDirectory / "target-pre-211")
-
   // Core Projects
   // -------------
   lazy val core: Seq[ProjectReference] =
     Seq(common, actor, markdown, json, json_scalaz7, json_ext, util)
-
-  lazy val pre_211_project: Seq[ProjectReference] = Seq(json_scalaz)
 
   lazy val common =
     coreProject("common")
@@ -72,12 +62,6 @@ object BuildDef extends Build {
         .settings(description := "JSON Library",
                   parallelExecution in Test := false,
                   libraryDependencies <++= scalaVersion { sv => Seq(scalap(sv), paranamer) })
-
-  lazy val json_scalaz =
-    coreProject("json-scalaz")
-        .dependsOn(json)
-        .settings(description := "JSON Library based on Scalaz 6",
-                  libraryDependencies <+= scalaVersion(scalaz))
 
   lazy val json_scalaz7 =
     coreProject("json-scalaz7")

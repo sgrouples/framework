@@ -162,4 +162,19 @@ trait BsonMetaRecord[BaseRecord <: BsonRecord[BaseRecord]] extends MetaRecord[Ba
       inst.fields.foreach(_.resetDirty)
     }
   }
+
+  def setFieldsFromDocument(inst: BaseRecord, doc: Document): Unit = {
+    for (k <- doc.keySet; field <- inst.fieldByName(k.toString)) {
+      field.setFromAny(doc.get(k.toString))
+    }
+    inst.runSafe {
+      inst.fields.foreach(_.resetDirty)
+    }
+  }
+
+  def fromDocument(doc: Document): BaseRecord = {
+    val inst: BaseRecord = createRecord
+    setFieldsFromDocument(inst, doc)
+    inst
+  }
 }

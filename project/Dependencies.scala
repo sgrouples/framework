@@ -29,7 +29,6 @@ object Dependencies {
   lazy val slf4jVersion = "1.7.2"
 
   lazy val scalazGroup        = defaultOrMapped("org.scalaz")
-  lazy val scalazVersion      = defaultOrMapped("6.0.4")
   lazy val scalaz7Version     = defaultOrMapped("7.0.6")
   lazy val specs2Version      = defaultOrMapped("2.3.11")
   lazy val scalatestVersion   = defaultOrMapped("2.1.3")
@@ -49,7 +48,6 @@ object Dependencies {
   lazy val scalajpa               = "org.scala-libs"             % "scalajpa"           % "1.5"     cross CVMappingAll
   lazy val scalap: ModuleMap      = "org.scala-lang"             % "scalap"             % _
   lazy val scala_compiler: ModuleMap = "org.scala-lang"          % "scala-compiler"     % _
-  lazy val scalaz_core: ModuleMap = sv => scalazGroup(sv)        % "scalaz-core"        % scalazVersion(sv) cross CVMappingAll
   lazy val scalaz7_core: ModuleMap = sv => scalazGroup(sv)       % "scalaz-core"        % scalaz7Version(sv) cross CVMappingScalaz
   lazy val slf4j_api              = "org.slf4j"                  % "slf4j-api"          % slf4jVersion
   lazy val squeryl                = "org.squeryl"                % "squeryl"            % "0.9.5-7" cross CVMappingAll
@@ -59,7 +57,6 @@ object Dependencies {
 
   // Aliases
   lazy val mongo_driver = mongo_java_driver
-  lazy val scalaz = scalaz_core
   lazy val scalaz7 = scalaz7_core
 
 
