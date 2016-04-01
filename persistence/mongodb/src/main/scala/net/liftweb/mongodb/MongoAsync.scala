@@ -12,9 +12,9 @@ import scala.concurrent.Promise
 
 
 private[mongodb] class SingleBooleanVoidCallback(f: () => Unit) extends SingleResultCallback[Void] {
-  private[this] val p = Promise[Boolean]
+  private[this] val p = Promise[Boolean]()
   override def onResult(result: java.lang.Void, t: Throwable): Unit = {
-    if (result != null) {
+    if (t == null) {
       f()
       p.success(true)
     }

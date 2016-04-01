@@ -2,7 +2,7 @@ import Dependencies._
 
 organization in ThisBuild          := "net.liftweb"
 
-version in ThisBuild :=  "2.6.2-MongoAsync2"
+version in ThisBuild :=  "2.6.2-MongoAsync-4"
 
 homepage in ThisBuild              := Some(url("http://www.liftweb.net"))
 
