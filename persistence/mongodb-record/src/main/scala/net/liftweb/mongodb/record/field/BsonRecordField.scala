@@ -24,9 +24,9 @@ import http.js.JsExp
 import http.js.JE.JsNull
 import json.JsonAST._
 import json.Printer
-
 import net.liftweb.record._
 import com.mongodb._
+import org.bson.Document
 
 import scala.xml._
 
@@ -102,4 +102,11 @@ class BsonRecordListField[OwnerType <: BsonRecord[OwnerType], SubRecordType <: B
     })))
     case other => setBox(FieldHelpers.expectedA("JArray", other))
   }
+
+  override def setFromDocumentList(list: java.util.List[Document]): Box[List[SubRecordType]] = {
+    setBox(Full(list.map{ doc =>
+      valueMeta.fromDocument(doc)
+    }.toList))
+  }
+
 }

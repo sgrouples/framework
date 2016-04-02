@@ -21,15 +21,14 @@ package field
 
 import scala.collection.JavaConversions._
 import scala.xml.NodeSeq
-
 import common.{Box, Empty, Failure, Full}
 import http.SHtml
 import http.js.JE.{JsNull, JsRaw}
 import json._
 import net.liftweb.record.{Field, FieldHelpers, MandatoryTypedField, Record}
 import util.Helpers._
-
 import com.mongodb._
+import org.bson.Document
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
@@ -68,9 +67,21 @@ class MongoListField[OwnerType <: BsonRecord[OwnerType], ListType: Manifest](rec
   def setFromAny(in: Any): Box[MyType] = {
     in match {
       case dbo: DBObject => setFromDBObject(dbo)
-      case list@c::xs if mf.erasure.isInstance(c) => setBox(Full(list.asInstanceOf[MyType]))
+      case list@c::xs if mf.erasure.isInstance(c) =>  setBox(Full(list.asInstanceOf[MyType]))
       case Some(list@c::xs) if mf.erasure.isInstance(c) => setBox(Full(list.asInstanceOf[MyType]))
       case Full(list@c::xs) if mf.erasure.isInstance(c) => setBox(Full(list.asInstanceOf[MyType]))
+      case jlist: java.util.List[_] => {
+        if(!jlist.isEmpty) {
+          val elem = jlist.get(0)
+          if(elem.isInstanceOf[org.bson.Document]) {
+            setFromDocumentList(jlist.asInstanceOf[java.util.List[org.bson.Document]])
+          } else {
+            setBox(Full(jlist.toList.asInstanceOf[MyType]))
+          }
+        } else {
+          setBox(Full(Nil))
+        }
+      }
       case s: String => setFromString(s)
       case Some(s: String) => setFromString(s)
       case Full(s: String) => setFromString(s)
@@ -148,6 +159,10 @@ class MongoListField[OwnerType <: BsonRecord[OwnerType], ListType: Manifest](rec
   def setFromDBObject(dbo: DBObject): Box[MyType] =
     setBox(Full(dbo.asInstanceOf[BasicDBList].toList.asInstanceOf[MyType]))
 
+  def setFromDocumentList(list: java.util.List[Document]): Box[MyType] = {
+    throw new RuntimeException("Warning, , setting Document as field with no converstion, probably not something you want to do")
+  }
+
 }
 
 /*
@@ -177,4 +192,5 @@ class MongoJsonObjectListField[OwnerType <: BsonRecord[OwnerType], JObjectType <
     })))
     case other => setBox(FieldHelpers.expectedA("JArray", other))
   }
+
 }

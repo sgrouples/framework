@@ -19,15 +19,18 @@ package field
 import net.liftweb.record._
 import net.liftweb.record.RecordHelpers.jvalueToJsExp
 import net.liftweb.record.field._
-import net.liftweb.http.js.JE.{JsObj, Num, Str, JsNull}
-import xml.{Text, NodeSeq}
+import net.liftweb.http.js.JE.{JsNull, JsObj, Num, Str}
+
+import xml.{NodeSeq, Text}
 import net.liftweb.mongodb.JObjectParser
 import com.mongodb.{BasicDBList, DBObject}
-import net.liftweb.common.{Failure, Empty, Full, Box}
+import net.liftweb.common.{Box, Empty, Failure, Full}
 import net.liftweb.util.Helpers
 import net.liftweb.json._
+
 import reflect.Manifest
 import net.liftweb.http.js.JsExp
+import org.bson.Document
 
 
 class MongoCaseClassField[OwnerType <: Record[OwnerType],CaseType](rec: OwnerType)( implicit mf: Manifest[CaseType]) extends Field[CaseType, OwnerType] with MandatoryTypedField[CaseType] with MongoFieldFlavor[CaseType] {
@@ -63,6 +66,8 @@ class MongoCaseClassField[OwnerType <: Record[OwnerType],CaseType](rec: OwnerTyp
     setFromJValue(jvalue)
   }
 
+
+
   override def setFromString(in: String): Box[CaseType] = {
     Helpers.tryo{ JsonParser.parse(in).extract[CaseType] }
   }
@@ -75,6 +80,7 @@ class MongoCaseClassField[OwnerType <: Record[OwnerType],CaseType](rec: OwnerTyp
     case (failure: Failure)  => setBox(failure)
     case _ => setBox(defaultValueBox)
   }
+
 }
 
 class MongoCaseClassListField[OwnerType <: Record[OwnerType],CaseType](rec: OwnerType)( implicit mf: Manifest[CaseType]) extends Field[List[CaseType], OwnerType] with MandatoryTypedField[List[CaseType]] with MongoFieldFlavor[List[CaseType]] {
@@ -126,5 +132,6 @@ class MongoCaseClassListField[OwnerType <: Record[OwnerType],CaseType](rec: Owne
   override def setFromString(in: String): Box[MyType] = {
     setFromJValue(JsonParser.parse(in))
   }
+
 }
 

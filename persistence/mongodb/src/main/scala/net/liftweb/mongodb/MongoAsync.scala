@@ -77,4 +77,11 @@ object MongoAsync {
     case _ => None
   }
 
+  def closeAll(): Unit = {
+    import scala.collection.JavaConversions._
+    dbs.values.foreach { case (mngo, _) =>
+      mngo.close()
+    }
+    dbs.clear()
+  }
 }
