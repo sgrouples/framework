@@ -2,7 +2,7 @@ import Dependencies._
 
 organization in ThisBuild          := "net.liftweb"
 
-version in ThisBuild :=  "2.6.2-MongoAsync-6"
+version in ThisBuild :=  "2.6.2-MongoAsync-7"
 
 homepage in ThisBuild              := Some(url("http://www.liftweb.net"))
 
@@ -12,9 +12,9 @@ startYear in ThisBuild             := Some(2006)
 
 organizationName in ThisBuild      := "WorldWide Conferencing, LLC"
 
-scalaVersion in ThisBuild          := "2.11.7"
+scalaVersion in ThisBuild          := "2.11.8"
 
-crossScalaVersions in ThisBuild    := Seq("2.11.7")
+crossScalaVersions in ThisBuild    := Seq("2.11.8")
 
 libraryDependencies in ThisBuild <++= scalaVersion {sv => Seq(specs2(sv), scalacheck, scalatest(sv)) }
 

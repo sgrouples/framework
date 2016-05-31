@@ -7,6 +7,8 @@ import com.mongodb.async.client.{MongoClient, MongoCollection, MongoDatabase}
 import com.mongodb.async.SingleResultCallback
 import net.liftweb.util.ConnectionIdentifier
 import org.bson.Document
+import org.bson.codecs.{IntegerCodec, LongCodec, ObjectIdCodec, StringCodec}
+import org.bson.codecs.configuration.CodecRegistries
 
 import scala.concurrent.Promise
 
@@ -31,6 +33,9 @@ object MongoAsync {
   * HashMap of Mongo instance and db name tuples, keyed by ConnectionIdentifier
   */
   private val dbs = new ConcurrentHashMap[ConnectionIdentifier, (MongoClient, String)]
+  val codecRegistry = CodecRegistries.fromRegistries(com.mongodb.MongoClient.getDefaultCodecRegistry(),
+    CodecRegistries.fromCodecs(new LongPrimitiveCodec, new IntegerPrimitiveCodec)
+  )
 
   /**
     * Define a Mongo db using a MongoClient instance.
@@ -44,7 +49,7 @@ object MongoAsync {
   */
   def getDb(name: ConnectionIdentifier): Option[MongoDatabase] = dbs.get(name) match {
     case null => None
-    case (mngo, db) => Some(mngo.getDatabase(db).withCodecRegistry(com.mongodb.MongoClient.getDefaultCodecRegistry))
+    case (mngo, db) => Some(mngo.getDatabase(db).withCodecRegistry(codecRegistry))
   }
 
 
