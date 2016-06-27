@@ -24,13 +24,12 @@ pomIncludeRepository in ThisBuild  := { _ => false }
 //for local
 //publishTo in ThisBuild            <<= isSnapshot(if (_) Some(Opts.resolver.sonatypeSnapshots) else Some(Opts.resolver.sonatypeStaging))
 
-publishTo in ThisBuild := Some(Resolver.file("mvn-repo", new File(Path.userHome + "/git/mvn-repo/")))
+publishTo in ThisBuild <<= {
+  val nexus = "https://nexus.groupl.es/"
+  isSnapshot(if (_) Some("Snapshots" at nexus + "repository/maven-snapshots/") else Some("Releases" at nexus + "repository/maven-releases/"))
+}
 
-scmInfo in ThisBuild               := Some(ScmInfo(url("https://github.com/lift/framework"), "scm:git:https://github.com/lift/framework.git"))
-
-pomExtra in ThisBuild              :=  Developers.toXml
-
-credentials in ThisBuild <+= state map { s => Credentials(BuildPaths.getGlobalSettingsDirectory(s, BuildPaths.getGlobalBase(s)) / ".credentials") }
+credentials += Credentials(Path.userHome / ".ivy2" / ".meweCredentials")
 
 initialize <<= (name, version, scalaVersion) apply printLogo
 
