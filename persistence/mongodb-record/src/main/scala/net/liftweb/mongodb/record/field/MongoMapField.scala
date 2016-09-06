@@ -20,15 +20,15 @@ package record
 package field
 
 import scala.xml.NodeSeq
-
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import net.liftweb.http.js.JE.{JsNull, JsRaw}
 import net.liftweb.json.JsonAST._
 import net.liftweb.json.{JsonParser, Printer}
 import net.liftweb.record._
 import net.liftweb.util.Helpers.tryo
-
 import com.mongodb._
+import org.bson.Document
+import scala.collection.JavaConversions._
 
 /**
   * Note: setting optional_? = false will result in incorrect equals behavior when using setFromJValue
@@ -46,6 +46,7 @@ class MongoMapField[OwnerType <: BsonRecord[OwnerType], MapValueType](rec: Owner
   def setFromAny(in: Any): Box[Map[String, MapValueType]] = {
     in match {
       case dbo: DBObject => setFromDBObject(dbo)
+      case doc: Document => setFromDocument(doc)
       case map: Map[String, MapValueType] => setBox(Full(map))
       case Some(map: Map[String, MapValueType]) => setBox(Full(map))
       case Full(map: Map[String, MapValueType]) => setBox(Full(map))
@@ -100,11 +101,36 @@ class MongoMapField[OwnerType <: BsonRecord[OwnerType], MapValueType](rec: Owner
   def setFromDBObject(dbo: DBObject): Box[Map[String, MapValueType]] = {
     import scala.collection.JavaConversions._
 
-    setBox(Full(
-      Map() ++ dbo.keySet.map {
-        k => (k.toString, dbo.get(k).asInstanceOf[MapValueType])
-      }
-    ))
+    val map: Map[String, MapValueType] = dbo.keySet.map {
+      k => (k, dbo.get(k).asInstanceOf[MapValueType])
+    } (scala.collection.breakOut)
+
+    setBox {
+      Full(map)
+    }
+  }
+
+  // set this field's value using a bson.Document returned from Mongo.
+  def setFromDocument(doc: Document): Box[Map[String, MapValueType]] = {
+
+    val map: Map[String, MapValueType] = doc.map {
+      case (k, v) => k -> v.asInstanceOf[MapValueType]
+    } (scala.collection.breakOut)
+
+    setBox {
+      Full(map)
+    }
+  }
+
+  def asDocument: Document = {
+    val map: Map[String, AnyRef] = {
+      value.keys.map {
+        k => k -> value.getOrElse(k, "")
+          .asInstanceOf[AnyRef]
+      } (scala.collection.breakOut)
+    }
+
+    new Document(map)
   }
 }
 
