@@ -31,7 +31,7 @@ object MongoAsync {
   /*
   * HashMap of Mongo instance and db name tuples, keyed by ConnectionIdentifier
   */
-  private val dbs = new ConcurrentHashMap[ConnectionIdentifier, (MongoClient, String)]
+  private[this] val dbs = new ConcurrentHashMap[ConnectionIdentifier, (MongoClient, String)]
   val codecRegistry = CodecRegistries.fromRegistries(com.mongodb.MongoClient.getDefaultCodecRegistry(),
     CodecRegistries.fromCodecs(new LongPrimitiveCodec, new IntegerPrimitiveCodec)
   )
@@ -76,7 +76,7 @@ object MongoAsync {
   /*
 * Get a Mongo collection. Gets a Mongo db first.
 */
-  private def getCollection(name: ConnectionIdentifier, collectionName: String): Option[MongoCollection[Document]] = getDb(name) match {
+  private[this] def getCollection(name: ConnectionIdentifier, collectionName: String): Option[MongoCollection[Document]] = getDb(name) match {
     case Some(mongo) if mongo != null => Some(mongo.getCollection(collectionName))
     case _ => None
   }
