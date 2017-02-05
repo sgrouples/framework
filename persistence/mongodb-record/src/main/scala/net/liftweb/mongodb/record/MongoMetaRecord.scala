@@ -294,20 +294,24 @@ trait MongoMetaRecord[BaseRecord <: MongoRecord[BaseRecord]]
   /**
     * replaces document with new one with given id. if `upsert` is set to true inserts new document
     * in similar way as save() from sync api
+    *
     */
   def replaceOneAsync(inst: BaseRecord, upsert: Boolean, concern: WriteConcern) = {
     useCollAsync { coll =>
       val p = Promise[BaseRecord]
       val doc: Document = inst.asDocument
       val options = new UpdateOptions().upsert(true)
+      foreachCallback(inst, _.beforeSave)
       val filter = new org.bson.Document("_id", doc.get("_id"))
-      coll.replaceOne(filter, doc, options, new SingleResultCallback[UpdateResult] {
+      coll.withWriteConcern(concern).replaceOne(filter, doc, options, new SingleResultCallback[UpdateResult] {
         override def onResult(result: UpdateResult, t: Throwable) = {
           if (t == null) {
             val upsertedId = result.getUpsertedId
             if (upsertedId != null && upsertedId.isObjectId) {
               inst.fieldByName("_id").foreach(fld => fld.setFromAny(upsertedId.asObjectId().getValue))
             }
+            foreachCallback(inst, _.afterSave)
+            inst.allFields.foreach { _.resetDirty }
             p.success(inst)
           } else {
             p.failure(t)

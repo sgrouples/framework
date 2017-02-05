@@ -559,7 +559,7 @@ object MongoFieldSpec extends Specification with MongoTestKit with AroundEach {
       val map = Map("a" -> "4", "b" -> "5", "c" -> "6")
       val doc = new Document(map)
       rec.mandatoryStringMapField.setFromDocument(doc)
-      rec.mandatoryStringMapField.get must_== map
+      rec.mandatoryStringMapField.value must_== map
       rec.mandatoryStringMapField.asDocument must_== doc
     }
   }

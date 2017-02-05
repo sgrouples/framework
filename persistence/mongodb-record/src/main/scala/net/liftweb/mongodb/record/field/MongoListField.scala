@@ -162,7 +162,7 @@ class MongoListField[OwnerType <: BsonRecord[OwnerType], ListType: Manifest](rec
     setBox(Full(dbo.asInstanceOf[BasicDBList].toList.asInstanceOf[MyType]))
 
   def setFromDocumentList(list: java.util.List[Document]): Box[MyType] = {
-    throw new RuntimeException("Warning, , setting Document as field with no converstion, probably not something you want to do")
+    throw new RuntimeException("Warning, , setting Document as field with no conversion, probably not something you want to do")
   }
 
 }
